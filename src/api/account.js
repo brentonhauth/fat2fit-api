@@ -10,10 +10,6 @@ router.get('/info', (req, res) => {
     res.json({});
 });
 
-router.get('/error', (req, res) => {
-    throw 'Uh Oh!';
-});
-
 // path=/account/login
 router.post('/login', (req, res) => {
     // Handle login attempt
