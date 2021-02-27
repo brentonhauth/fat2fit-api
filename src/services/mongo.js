@@ -11,6 +11,8 @@ module.exports = async () => {
             useNewUrlParser: true,
             useCreateIndex: true 
         }).catch(console.error);
+        
+        require('../models/user');
     }
     return connection;
 };

@@ -1,3 +1,4 @@
+const db = require('./services/mongo')();
 const express = require('express');
 const attachCommon = require('./middleware/common');
 const attachErrorHandlers = require('./middleware/errors');

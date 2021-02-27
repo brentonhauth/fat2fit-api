@@ -13,9 +13,10 @@ const notFoundHandler = (req, res, _next) => {
  * @type {import('express').ErrorRequestHandler}
  */
 const internalErrorHandler = (error, _req, res, _next) => {
-    res.status(500).json({ error });
+    res.status(500).json({
+        msg: error.message || error
+    });
 };
-
 
 
 /**

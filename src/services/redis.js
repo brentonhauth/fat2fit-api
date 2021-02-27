@@ -10,16 +10,15 @@ const THREE_HOURS = 3 * 60 * 60;
 /** @type {redis.RedisClient|undefined} */
 let client;
 
-try {
-    // If you don't have redis, then it won't work
-    console.log('OwO', config.REDIS_URL);
-    client = redis.createClient(config.REDIS_URL, {
-        password: config.REDIS_PASSWORD || ''
-    });
-} catch (e) {
-    console.error('Redis client not setup.');
-    client = null;
-}
+// try {
+//     // If you don't have redis, then it won't work
+//     client = redis.createClient(config.REDIS_URL, {
+//         password: config.REDIS_PASSWORD || ''
+//     });
+// } catch (e) {
+//     console.error('Redis client not setup.');
+//     client = null;
+// }
 
 
 module.exports = {
