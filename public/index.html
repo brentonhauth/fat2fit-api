@@ -5,7 +5,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fat2Fit API</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="./style.css" /> -->
+<style>
+    h3 { font-size: 1.65rem !important; }
+    h4 { font-size: 1.38rem !important; }
+    h5 { font-size: 1.18rem !important; color: #414141; }
+
+    .get-method, .post-method, .status {
+        background-color: #f1f1f1;
+        padding: 3px;
+        margin-right: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-radius: 3px;
+    }
+
+    .get-method {
+        color: #53c190;
+    }
+
+    .post-method {
+        color: cornflowerblue;
+    }
+
+    .block {
+        border-radius: 5px;
+        width: 95%;
+        background-color: #f4f4f4;
+    }
+</style>
 </head>
 <body>
 <header id="page-header" class="navbar navbar-expand-sm navbar-dark bg-dark flex-column flex-md-row justify-content-between">
@@ -15,9 +45,129 @@
         <a class="nav-item nav-link ml-2 ml-md-0 mr-2" href="https://github.com/humblebumble90/COMP313_Team-6">App Code</a>
     </div>
 </header>
+<div id="App" class="container pt-1">
+</div>
+
 <div class="container pt-1">
     <h1>Fat2Fit API</h1>
-    <p>This page will be updated with documentation on how to use it.</p>
+    <div class="px-5">
+        <h3>About</h3>
+        <p> 
+            All responses will be in this structure. The <code>"data"</code> can take the form of anything,
+            like user data, tokens, or a combination of things. The <code>"meta"</code> details things about
+            the request.
+        </p>
+        <pre class="block ml-2 p-2">
+            {
+                "meta": {
+                    "code": number,  // 200 is OK, anything else is an error.
+                    "msg": string
+                },
+                "data":  { ... }  // can be anything
+            }
+        </pre>
+        <div class="alert alert-warning">
+            Please note that although a responses header-status may change depending on the situation,
+            as long as <code>"meta.code" == 200</code> the request is OK. Otherwise, the request is
+            should be treated as an error.
+        </div>
+    </div>
+    <br />
+    <section class="mt-5"><h2>Account</h2>
+        <div class="ml-2">
+            <h3 class="mt-4"><code class="post-method">POST</code><code>/account/login</code></h3>
+            <hr class="mb-2" />
+            <div class="px-2">
+                <h4>Request</h4>
+                <h5 class="ml-2">Body</h5>
+                <pre class="block ml-2 p-2">
+                    {
+                        "email": string,
+                        "password": string
+                    }
+                </pre>
+    
+                <h4>Response</h4>
+                <pre class="block ml-2 p-2">
+                    {
+                        "meta": {
+                            "code": 200,
+                            "msg": string
+                        },
+                        "data": {
+                            "user": {
+                                "_id": string,
+                                "email": string,
+                                "password": string,
+                                "lastName": string,
+                                "firstName": string,
+                                "__v": number  // from mongo
+                            },
+                            "token": JsonWebToken  // (string), use for authentication
+                        }
+                    }
+                </pre>
+            </div>
+        </div>
+        <div class="ml-2">
+            <h3 class="mt-5"><code class="post-method">POST</code><code>/account/signup</code></h3>
+            <hr class="mb-2" />
+            <div class="px-2">
+                <h4>Request</h4>
+                <h5 class="ml-2">Body</h5>
+                <pre class="block ml-2 p-2">
+                    {
+                        "email": string,
+                        "password": string
+                        "firstName": string,
+                        "lastName": string
+                    }
+                </pre>
+                <h4>Response</h4>
+                <pre class="block ml-2 p-2">
+                    {
+                        "meta": {
+                            "code": 200,
+                            "msg": string
+                        },
+                        "data":  {
+                            "_id": string,
+                            "email": string,
+                            "password": string,
+                            "lastName": string,
+                            "firstName": string,
+                            "__v": number  // from mongo
+                        }
+                    }
+                </pre>
+            </div>
+        </div>
+    </section>
+
+    <hr class="bg-dark my-5" />
+    <!-- Insert Groups -->
 </div>
+<script>
+!function() {
+"use strict";
+// Strips extra whitespace from begining
+var blocks = document.querySelectorAll(".block");
+blocks.forEach(function(block) {
+    var lines = block.innerText.split('\n');
+    var shortest, re;
+    const AllSpaces = /^\s*$/;
+    lines.forEach(function(line) {
+        if (AllSpaces.test(line)) return;
+        let x = line.match(/^\s*/)[0];
+        if (shortest === undefined || x.length < shortest) {
+            shortest = x.length;
+        }
+    });
+    re = new RegExp('^\\s{0,'+shortest+'}');
+    var replace = lines.map(ln => ln.replace(re, ''));
+    block.innerText = replace.join('\n');
+});
+}();
+</script>
 </body>
 </html>
