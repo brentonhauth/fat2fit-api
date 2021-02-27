@@ -1,11 +1,12 @@
+const { bad } = require('../helpers/response');
+
 /**
  * (404) Page Not Found handler 
  * @type {import('express').RequestParamHandler}
  */
 const notFoundHandler = (req, res, _next) => {
-    res.status(404).json({
-        msg: `Could not ${req.method} ${req.path}`
-    });
+    const payload = bad(404, `Could not ${req.method} ${req.path}`);
+    res.status(404).json(payload);
 };
 
 /**
@@ -13,9 +14,8 @@ const notFoundHandler = (req, res, _next) => {
  * @type {import('express').ErrorRequestHandler}
  */
 const internalErrorHandler = (error, _req, res, _next) => {
-    res.status(500).json({
-        msg: error.message || error
-    });
+    const payload = bad(500, error.message || `${error}`);
+    res.status(500).json(payload);
 };
 
 

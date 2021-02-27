@@ -6,11 +6,11 @@ const router = express();
 
 // path=/group/create
 router.post('/create', (req, res) => {
-    res.json({});
+    res.json( ok({}) );
 });
 
 router.get('/get/:id', (req, res) => {
-    res.json({});
+    res.json( ok({}) );
 });
 
 module.exports = router;

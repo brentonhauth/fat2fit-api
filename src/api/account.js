@@ -1,6 +1,7 @@
 const express = require('express').Router;
 const User = require('../models/user');
 const auth = require('../middleware/auth');
+const { ok } = require('../helpers/response');
 
 const router = express();
 
@@ -20,8 +21,8 @@ router.post('/login', (req, res, next) => {
             res.json({ msg: 'login failed' });
         } else {
             let token = await user.generateToken();
-            const data = { user, token };
-            res.json({ data });
+            const payload = ok({ user, token });
+            res.json(payload);
         }
     }).catch(next);
 });
@@ -32,7 +33,7 @@ router.post('/signup', (req, res, next) => {
         if (err) {
             return next(err);
         } else {
-            res.json({ data: doc });
+            res.json( ok(doc) );
         }
     });
 });
@@ -40,13 +41,13 @@ router.post('/signup', (req, res, next) => {
 // path=/account/fitdata
 router.post('/fitdata', auth(), (req, res) => {
     // Handle adding and updating fitness data
-    res.json({});
+    res.json( ok({}) );
 });
 
 // path=/account/passreset
 router.post('/passreset', auth(), (req, res) => {
     // Handle password reset (Security Question)
-    res.json({});
+    res.json( ok({}) );
 });
 
 

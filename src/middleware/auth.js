@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const config = require('../config');
+const { bad } = require('../helpers/response');
+
 
 /**
  * @typedef AuthOptions
@@ -37,10 +39,8 @@ async function standard(req, res, next) {
         req.user = user; // await User.findOne({ _id: user.uid });
         return next();
     } catch (e) {
-        res.status(401).json({
-            code: 401,
-            msg: 'Unauthorized'
-        });
+        const payload = bad(401, 'Unauthorized');
+        res.status(401).json(payload);
     }
 }
 
