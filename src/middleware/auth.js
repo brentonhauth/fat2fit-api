@@ -40,7 +40,7 @@ async function standard(req, res, next) {
         return next();
     } catch (e) {
         const payload = bad(401, 'Unauthorized');
-        res.status(401).json(payload);
+        res.json(payload);
     }
 }
 

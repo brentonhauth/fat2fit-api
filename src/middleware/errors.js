@@ -6,7 +6,7 @@ const { bad } = require('../helpers/response');
  */
 const notFoundHandler = (req, res, _next) => {
     const payload = bad(404, `Could not ${req.method} ${req.path}`);
-    res.status(404).json(payload);
+    res.json(payload);
 };
 
 /**
@@ -15,7 +15,7 @@ const notFoundHandler = (req, res, _next) => {
  */
 const internalErrorHandler = (error, _req, res, _next) => {
     const payload = bad(500, error.message || `${error}`);
-    res.status(500).json(payload);
+    res.json(payload);
 };
 
 
