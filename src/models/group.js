@@ -42,19 +42,21 @@ const definitions = {
 /** */
 const groupSchema = new mongoose.Schema(definitions);
 
-groupSchema.statics.joinGroup = (groupId, uid) => {
+groupSchema.statics.joinGroup = async (groupId, uid) => {
     if (typeof groupId !== 'string') {
-        return Promise.reject(new Error('Invalid group id.'));
+        throw new Error('Invalid group id.');
+    };
+    
+    const group = await Group.findById(groupId.toUpperCase());
+    const isAlreadyMember = group.members.some(m => m.equals(uid));
+
+    if (!isAlreadyMember && !group.coach.equals(uid)) {
+        group.members.push(new ObjectId(uid));
+        await group.save();
     }
 
-    return new Promise((resolve, reject) => {
-        const query = { $addToSet: { members: new ObjectId(uid) } };
-        groupId = groupId.toUpperCase();
-        Group.findByIdAndUpdate(groupId, query, { new: true }, (err, doc) => {
-            if (err) reject(err);
-            else resolve(doc);
-        });
-    });
+    const select = ['_id', 'email', 'firstName', 'lastName'];
+    return group.populate('members', select).populate('coach', select).execPopulate();
 };
 
 groupSchema.statics.getAllFor = groupId => {

@@ -13,7 +13,7 @@
     h4 { font-size: 1.38rem !important; }
     h5 { font-size: 1.18rem !important; color: #414141; }
 
-    .get-method, .post-method, .status {
+    .get-method, .post-method, .put-method, .status {
         background-color: #f1f1f1;
         padding: 3px;
         margin-right: 5px;
@@ -28,6 +28,14 @@
 
     .post-method {
         color: cornflowerblue;
+    }
+
+    .put-method {
+        color: #f5cf5c;
+    }
+
+    .param {
+        color: steelblue;
     }
 
     .block {
@@ -145,7 +153,119 @@
     </section>
 
     <hr class="bg-dark my-5" />
-    <!-- Insert Groups -->
+
+    <section class="mt-5"><h2>Group</h2>
+        <div class="ml-2">
+            <h3 class="mt-4">
+                <code class="get-method">GET</code><code>/group/<span class="param">{ID}</span></code>
+            </h3>
+            <hr class="mb-2" />
+            <div class="px-2">
+                <h4>Response</h4>
+                <pre class="block ml-2 p-2">
+                    {
+                        "meta": {
+                            "code": 200,
+                            "msg": string
+                        },
+                        "data": {
+                            "members": [
+                                {
+                                    "_id": string,
+                                    "email": string,
+                                    "lastName": string,
+                                    "firstName": string
+                                }
+
+                                // ...
+                            ],
+                            "_id": string,  // whatever {ID} was
+                            "name": string,
+                            "coach": {
+                                "_id": string,
+                                "email": string,
+                                "lastName": string,
+                                "firstName": string
+                            },
+                            "__v": number
+                        }
+                    }
+                </pre>
+            </div>
+        </div>
+        <div class="ml-2">
+            <h3 class="mt-5"><code class="post-method">POST</code><code>/group/create</code></h3>
+            <hr class="mb-2" />
+            <div class="px-2">
+                <h4>Request</h4>
+                <h5 class="ml-2">Body</h5>
+                <pre class="block ml-2 p-2">
+                    {
+                        "name": string
+                    }
+                </pre>
+    
+                <h4>Response</h4>
+                <pre class="block ml-2 p-2">
+                    {
+                        "meta": {
+                            "code": 200,
+                            "msg": string
+                        },
+                        "data": {
+                            "members": [],
+                            "name": string,
+                            "coach": {
+                                "_id": string,
+                                "email": string,
+                                "lastName": string,
+                                "firstName": string
+                            },
+                            "_id": string  // e.g. "0DMTAK"
+                            "__v": number
+                        }
+                    }
+                </pre>
+            </div>
+        </div>
+        <div class="ml-2">
+            <h3 class="mt-5"><code class="put-method">PUT</code><code>/group/join/<span class="param">{ID}</span></code></h3>
+            <hr class="mb-2" />
+            <div class="px-2">
+                <h4>Response</h4>
+                <pre class="block ml-2 p-2">
+                    {
+                        "meta": {
+                            "code": 200,
+                            "msg": string
+                        },
+                        "data": {
+                            "members": [
+                                {
+                                    "_id": string,
+                                    "email": string,
+                                    "lastName": string,
+                                    "firstName": string
+                                }
+
+                                // ...
+                                // will include the user that just joined
+                            ],
+                            "_id": string,  // whatever {ID} was
+                            "name": string,
+                            "coach": {
+                                "_id": string,
+                                "email": string,
+                                "lastName": string,
+                                "firstName": string
+                            },
+                            "__v": number
+                        }
+                    }
+                </pre>
+            </div>
+        </div>
+    </section>
 </div>
 <script>
 !function() {

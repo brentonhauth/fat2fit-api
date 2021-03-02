@@ -8,20 +8,22 @@ const router = express();
 // NOTE: All routes in this file are automatically appended to '/group/*'
 
 // path=/group/create
-router.post('/create', auth(), (req, res, next) => {
+router.post('/create', auth(), async (req, res, next) => {
     let group = new Group({
         ...req.body,
         coach: req.user._id,
     });
 
-    group.save((err, doc) => {
-        if (err) {
-            return next(err);
-        }
-        //Group.findOne({ _id: doc._id }).th;
-        const payload = ok(doc);
-        res.json(payload);
-    });
+    try {
+        await group.save();
+
+        const select = ['_id', 'email', 'firstName', 'lastName'];
+        let doc = await group.populate('coach', select).execPopulate();
+
+        res.json(ok(doc));
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.put('/join/:id', auth(), (req, res, next) => {
