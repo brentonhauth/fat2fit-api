@@ -36,6 +36,16 @@ router.put('/join/:id', auth(), (req, res, next) => {
     }).catch(next);
 });
 
+router.put('/leave/:id', auth(), (req, res, next) => {
+    const groupId = req.params.id;
+    const uid = req.user._id;
+
+    Group.leaveGroup(groupId, uid).then(() => {
+        const msg = 'Successfully left group.';
+        res.json(ok(msg, msg));
+    }).catch(next);
+});
+
 // must be placed at bottom of document
 router.get('/:id', (req, res, next) => {
     const groupId = req.params.id;

@@ -59,6 +59,27 @@ groupSchema.statics.joinGroup = async (groupId, uid) => {
     return group.populate('members', select).populate('coach', select).execPopulate();
 };
 
+groupSchema.statics.leaveGroup = async (groupId, uid) => {
+    if (typeof groupId !== 'string') {
+        throw new Error('Invalid group id.');
+    };
+    
+    const group = await Group.findById(groupId.toUpperCase());
+
+    if (!group) {
+        throw new Error('Group doesn\'t exist');
+    }
+
+    const index = group.members.findIndex(m => m.equals(uid));
+
+    if (group.coach.equals(uid) || index === -1) {
+        throw new Error('User is not a group member');
+    }
+
+    group.members.splice(index, 1);
+    await group.save();
+};
+
 groupSchema.statics.getAllFor = groupId => {
     if (typeof groupId !== 'string') {
         return Promise.reject(new Error('Invalid group id.'));
