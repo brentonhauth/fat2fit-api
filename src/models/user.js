@@ -38,6 +38,21 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    height:{
+        type: Number
+    },
+    waist:{
+        type: Number
+    },
+    pushupScore:{
+        type: Number
+    },
+    situpScore:{
+        type: Number
+    },
+    freq:{
+        type: Number
+    },
 });
 
 userSchema.pre('save', async function(next) {
@@ -51,6 +66,7 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.generateToken = function() {
     const payload = {
         _id: this._id,
+        email:this.email,
         ts: Date.now(),
     };
     return jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
