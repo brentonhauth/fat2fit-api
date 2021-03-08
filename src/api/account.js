@@ -39,9 +39,31 @@ router.post('/signup', (req, res, next) => {
 });
 
 // path=/account/fitdata
+//update fitness data of user
 router.post('/fitdata', auth(), (req, res) => {
     // Handle adding and updating fitness data
-    res.json( ok({}) );
+    const {height, waist,pushupScore, situpScore, freq } = req.body;
+    let query = {"_id": req.user._id};
+    User.findOneAndUpdate(query,req.body,function(err, result){
+        if(err){
+            return next(err);
+        }else{
+            res.json({"Status":"Update Complete"});
+        }
+    });
+});
+
+//path=/account/checkData
+//this method return data based on token
+router.post('/checkData',auth(), (req,res)=>{
+    var email = req.user.email;
+    User.find({}, function(err,result){
+        if (err){
+            return next(err);
+        }else{
+            res.json(result);
+        }
+    });
 });
 
 // path=/account/passreset
