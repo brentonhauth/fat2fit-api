@@ -1,5 +1,6 @@
-const MAX_CODE = parseInt('ZZZZZ', 36);
+const MAX_CODE = parseInt('ZZZZZZ', 36);
 const mongoose = require('mongoose');
+const Activity = require('./activity');
 const ObjectId = mongoose.Types.ObjectId;
 
 /**
@@ -36,6 +37,11 @@ const definitions = {
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+    }],
+
+    activities: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Activity',
     }],
 };
 
@@ -78,6 +84,28 @@ groupSchema.statics.leaveGroup = async (groupId, uid) => {
 
     group.members.splice(index, 1);
     await group.save();
+};
+
+groupSchema.statics.createActivity = async (groupId, uid, activityData) => {
+    if (typeof groupId !== 'string') {
+        throw new Error('Invalid group id.');
+    }
+
+    const group = await Group.findById(groupId.toUpperCase());
+    if (!group) {
+        throw new Error('Group doesn\'t exist');
+    } else if (!group.coach.equals(uid)) {
+        throw new Error('User is not this group\'s coach');
+    }
+
+    let activity = new Activity(activityData);
+
+    const doc = await activity.save();
+
+    group.activities.push(new ObjectId(doc._id));
+    await group.save();
+
+    return doc;
 };
 
 groupSchema.statics.getAllFor = groupId => {

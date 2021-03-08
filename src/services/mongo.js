@@ -13,6 +13,7 @@ module.exports = async () => {
         }).catch(console.error);
         
         require('../models/user');
+        require('../models/activity');
         require('../models/group');
     }
     return connection;
