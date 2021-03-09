@@ -1,7 +1,7 @@
 const express = require('express').Router;
 const auth = require('../middleware/auth');
 const Group = require('../models/group');
-// const Activity = require('../models/activity');
+const Activity = require('../models/activity');
 const { ok } = require('../helpers/response');
 
 const router = express();
@@ -32,7 +32,7 @@ router.put('/join/:id', auth(), (req, res, next) => {
     const uid = req.user._id;
 
     Group.joinGroup(groupId, uid).then(doc => {
-        const payload = ok(doc);
+        const payload = ok(doc, `Successfully joined ${doc._id}`);
         res.json(payload);
     }).catch(next);
 });
@@ -41,9 +41,9 @@ router.put('/leave/:id', auth(), (req, res, next) => {
     const groupId = req.params.id;
     const uid = req.user._id;
 
-    Group.leaveGroup(groupId, uid).then(() => {
-        const msg = 'Successfully left group.';
-        res.json(ok(msg, msg));
+    Group.leaveGroup(groupId, uid).then(gid => {
+        const payload = ok(gid, `Successfully left ${gid}`);
+        res.json(payload);
     }).catch(next);
 });
 
@@ -51,7 +51,7 @@ router.post('/:id/activity/create', auth(), (req, res, next) => {
     const groupId = req.params.id;
     const uid = req.user._id;
 
-    Group.createActivity(groupId, uid, req.body).then(activity => {
+    Activity.createNew(groupId, uid, req.body).then(activity => {
         res.json(ok(activity));
     }).catch(next);
 });

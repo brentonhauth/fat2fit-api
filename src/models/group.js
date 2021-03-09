@@ -1,6 +1,5 @@
 const MAX_CODE = parseInt('ZZZZZZ', 36);
 const mongoose = require('mongoose');
-const Activity = require('./activity');
 const ObjectId = mongoose.Types.ObjectId;
 
 /**
@@ -62,15 +61,19 @@ groupSchema.statics.joinGroup = async (groupId, uid) => {
     }
 
     const select = ['_id', 'email', 'firstName', 'lastName'];
-    return group.populate('members', select).populate('coach', select).execPopulate();
+    return group.populate('members', select)
+        .populate('coach', select)
+        .populate('activities')
+        .execPopulate();
 };
 
 groupSchema.statics.leaveGroup = async (groupId, uid) => {
     if (typeof groupId !== 'string') {
         throw new Error('Invalid group id.');
-    };
-    
-    const group = await Group.findById(groupId.toUpperCase());
+    }
+
+    groupId = groupId.toUpperCase();
+    const group = await Group.findById(groupId);
 
     if (!group) {
         throw new Error('Group doesn\'t exist');
@@ -84,28 +87,7 @@ groupSchema.statics.leaveGroup = async (groupId, uid) => {
 
     group.members.splice(index, 1);
     await group.save();
-};
-
-groupSchema.statics.createActivity = async (groupId, uid, activityData) => {
-    if (typeof groupId !== 'string') {
-        throw new Error('Invalid group id.');
-    }
-
-    const group = await Group.findById(groupId.toUpperCase());
-    if (!group) {
-        throw new Error('Group doesn\'t exist');
-    } else if (!group.coach.equals(uid)) {
-        throw new Error('User is not this group\'s coach');
-    }
-
-    let activity = new Activity(activityData);
-
-    const doc = await activity.save();
-
-    group.activities.push(new ObjectId(doc._id));
-    await group.save();
-
-    return doc;
+    return groupId;
 };
 
 groupSchema.statics.getAllFor = groupId => {
@@ -116,7 +98,8 @@ groupSchema.statics.getAllFor = groupId => {
     const select = ['_id', 'email', 'firstName', 'lastName'];
     return Group.findOne({ _id: groupId.toUpperCase() })
         .populate('members', select)
-        .populate('coach', select).exec().then(group => {
+        .populate('coach', select)
+        .populate('activities').exec().then(group => {
             if (group) return group;
             throw new Error('No group found.');
         });
