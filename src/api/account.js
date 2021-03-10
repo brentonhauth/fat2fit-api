@@ -8,9 +8,11 @@ const router = express();
 
 // NOTE: All routes in this file are automatically appended to '/account/*'
 
-router.get('/info', auth(), (req, res) => {
-    // getting account info
-    res.json({});
+router.get('/info', auth(), (req, res, next) => {
+    const _id = req.user._id;
+    User.findOne({ _id }).then(user => {
+        res.json(ok(user));
+    }).catch(next);
 });
 
 // path=/account/login

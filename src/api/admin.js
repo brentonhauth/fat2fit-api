@@ -7,10 +7,18 @@ const router = express();
 
 router.use( auth({ role: 'A' }) );
 
-router.get('/', (req, res) => {
+
+router.get('/user/:id', (req, res) => {
     res.json(ok({}));
 });
 
+router.post('/user/:id', (req, res) => {
+    res.json(ok({}));
+});
+
+router.get('/user/search', (req, res) => {
+    res.json(ok({}));
+});
 
 
 module.exports = router;

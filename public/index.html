@@ -63,7 +63,7 @@
         <p> 
             All responses will be in this structure. The <code>"data"</code> can take the form of anything,
             like user data, tokens, or a combination of things. The <code>"meta"</code> details things about
-            the request.
+            the request. All methods are in the <code>Fat2FitApi</code> class.
         </p>
         <pre class="block ml-2 p-2">
             {
@@ -71,7 +71,7 @@
                     "code": number,  // 200 is OK, anything else is an error.
                     "msg": string
                 },
-                "data":  { ... }  // can be anything
+                "data": { ... }  // can be anything
             }
         </pre>
         <div class="alert alert-warning">
@@ -107,6 +107,7 @@
                                 "_id": string,
                                 "email": string,
                                 "password": string,
+                                "role": string,  // 'A', 'C' or 'U'
                                 "lastName": string,
                                 "firstName": string,
                                 "__v": number  // from mongo
@@ -114,6 +115,27 @@
                             "token": JsonWebToken  // (string), use for authentication
                         }
                     }
+                </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    String email = "example@email.com",
+                        password = "Password#123$";
+
+                    api.login(email, password, res -> {
+                        User user = res.getData().getUser();
+                        char role = user.getRole();
+
+                        if (role == 'A') {
+                            // logged in as admin.
+                        } else if (role == 'C') {
+                            // logged in as Customer rep.
+                        } else if (role == 'U') {
+                            // logged in as end user
+                        }
+                    }, err -> {
+                        // Handles unsuccessful login
+                    });
                 </pre>
             </div>
         </div>
@@ -138,15 +160,32 @@
                             "code": 200,
                             "msg": string
                         },
-                        "data":  {
+                        "data": {
                             "_id": string,
                             "email": string,
                             "password": string,
                             "lastName": string,
                             "firstName": string,
+                            "role": string,  // 'A', 'C' or 'U'
                             "__v": number  // from mongo
                         }
                     }
+                </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    User data = new User();
+
+                    data.setEmail("example@email.com");
+                    data.setPassword("Password#123$");
+                    data.setFirstName("John");
+                    data.setLastName("Smith");
+
+                    api.signup(email, password, res -> {
+                        User user = res.getData();
+                    }, err -> {
+                        // Unsuccessful
+                    });
                 </pre>
             </div>
         </div>
@@ -178,6 +217,7 @@
                             "password": string,
                             "lastName": string,
                             "firstName": string,
+                            "role": string,  // 'A', 'C' or 'U'
                             "freq": number,
                             "height": number,
                             "pushupScore": number,
@@ -185,6 +225,30 @@
                             "waist": number
                         }
                     }
+                </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    User data = new User();
+
+                    data.setHeight(20);
+                    data.setWaist(21);
+                    data.setPushupScore(22);
+                    data.setSitupScore(22);
+                    data.setFreq(23);
+
+                    api.sendFitData(data, res -> {
+                        User u = res.getData();
+                        String text = "" +
+                                "Pushup Score: " + u.getPushupScore() +
+                                "\nSitup Score: " + u.getSitupScore() +
+                                "\nWaist: " + u.getWaist() +
+                                "\nHeight: " + u.getHeight() +
+                                "\nFreq: " + u.getFreq();
+                        setSuccessText(text);
+                    }, err -> {
+                        // Unsuccessful
+                    });
                 </pre>
             </div>
         </div>
@@ -239,6 +303,17 @@
                         }
                     }
                 </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    String groupId = "0DMTAK";
+
+                    api.getGroup(groupId, res -> {
+                        Group group = res.getData();
+                    }, err -> {
+                        // Unsuccessful
+                    });
+                </pre>
             </div>
         </div>
         <div class="ml-2">
@@ -274,6 +349,17 @@
                             "__v": number
                         }
                     }
+                </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    String name = "Group Name";
+
+                    api.createGroup(name, res -> {
+                        Group group = res.getData();
+                    }, err -> {
+                        // Unsuccessful
+                    });
                 </pre>
             </div>
         </div>
@@ -322,6 +408,17 @@
                         }
                     }
                 </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    String groupId = "0DMTAK";
+
+                    api.joinGroup(groupId, res -> {
+                        Group group = res.getData();
+                    }, err -> {
+                        // Unsuccessful
+                    });
+                </pre>
             </div>
         </div>
         <div class="ml-2">
@@ -337,6 +434,17 @@
                         },
                         "data": string  // whatever {ID} was, e.g. "N72OJ8"
                     }
+                </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    String groupId = "0DMTAK";
+
+                    api.leaveGroup(groupId, res -> {
+                        String gId = res.getData();
+                    }, err -> {
+                        // Unsuccessful
+                    });
                 </pre>
             </div>
         </div>
@@ -371,6 +479,20 @@
                             "created": timestamp  // (string), e.g. "2021-03-09T20:20:38.810Z",
                         }
                     }
+                </pre>
+                <h4>Android Studio Code</h4>
+                <pre class="block ml-2 p-2">
+                    Fat2FitApi api = Fat2FitApi.getInstance(this);
+                    String groupId = "W4FBRH",
+                        title = "Title!",
+                        description = "Description!",
+                        hyperlink = null;
+
+                    api.createGroupActivity(groupId, title, description, hyperlink, res -> {
+                        GroupActivity activity = res.getData();
+                    }, err -> {
+                        // Unsuccessful
+                    });
                 </pre>
             </div>
         </div>
