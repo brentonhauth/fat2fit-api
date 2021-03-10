@@ -1,19 +1,15 @@
+// const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
 const config = require('../config');
 const { bad } = require('../helpers/response');
 
 
 /**
  * @typedef AuthOptions
- * @property {string|string[]} [roles] 
+ * @property {string|string[]} [role]
+ * @property {string|string[]} [action] 
  */
 //
-
-/**
- * @returns {string}
- */
-const getAuthorization = req => req.header('Authorization').replace('Bearer ', '');
 
 /**
  * @param {string} token
@@ -27,16 +23,21 @@ const verifyAuthorization = token => {
     });
 };
 
+const extractUser = async req => {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const user = await verifyAuthorization(token);
+    if (user) return user;
+    throw new Error('Invalid');
+};
+
 /**
  * @todo Check redis cache for auth token
  * @type {import('express').RequestHandler}
  */
 async function standard(req, res, next) {
     try {
-        const token = getAuthorization(req);
-        const user = await verifyAuthorization(token);
-        if (!user) throw new Error('Invalid');
-        req.user = user; // await User.findOne({ _id: user.uid });
+        const user = await extractUser(req);
+        req.user = user;
         return next();
     } catch (e) {
         const payload = bad(401, 'Unauthorized');
@@ -50,7 +51,31 @@ async function standard(req, res, next) {
  * @returns {import('express').RequestHandler}
  */
 function custom(options) {
-    return standard;// (req, res, next) => {};
+    if (!options || typeof options !== 'object') {
+        return standard;
+    }
+
+    return async (req, res, next) => {
+        try {
+            const user = await extractUser(req);
+            for (let i in options) {
+                let opt = options[i];
+                let val = user[i];
+                if (Array.isArray(opt)) {
+                    if (!opt.includes(val)) {
+                        throw new Error(opt);
+                    }
+                } else if (val !== opt) {
+                    throw new Error(opt);
+                }
+            }
+            req.user = user;
+            return next();
+        } catch (e) {
+            const payload = bad(401, `Unauthorized: ${e}`);
+            res.json(payload);
+        }
+    };
 }
 
 /**

@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    role: {
+        type: String,
+        enum: ['U', 'A', 'C'],
+        default: 'U'
+    },
     height:{
         type: Number
     },
@@ -66,7 +71,8 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.generateToken = function() {
     const payload = {
         _id: this._id,
-        email:this.email,
+        email: this.email,
+        role: this.role,
         ts: Date.now(),
     };
     return jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
