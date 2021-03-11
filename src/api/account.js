@@ -101,32 +101,39 @@ router.get('/questions', (req, res) => {
 // path=/account/questions
 router.post('/questions', (req, res,next) => {
     // Handle password reset (Security Question)
-    var password = new Password(req.body);
-    var email = req.body.email;
-    User.findOne({email},function(err,user){
+    var {email,answer1,answer2} = req.body;
+    Password.findOne({email},function(err,result){
         if(err){
             return next(err);
         }else{
-            let token = user.generateToken();
-            const payload = ok({token});
-            res.json(payload);
-        }
-    }).catch(next);
-});
-
-// path=/account/passreset
-router.post('/passreset', auth(), (req, res) => {
-    var password = req.body.password;
-    let query = { _id: req.user._id };
-    const options = { new: true };
-    User.findOneAndUpdate(query,password,options,function(err,result){
-        if(err){
-            return next(err);
-        }else{
-            res.json(ok(result, "Password Update Complete"));
+            if(result.answer1==answer1&&result.answer2==answer2){
+                User.findOne({email},function(err,user){
+                    if(err){
+                        return next(err);
+                    }else{
+                        let token = user.generateToken();
+                        const payload = ok({token});
+                        res.json(payload);
+                    }
+                }).catch(next);
+            }
         }
     });
 });
 
-
+// path=/account/passreset
+router.post('/passreset', auth(), (req, res) => {
+    var email = req.user.email;
+    var password = req.body.password;
+    User.findOne({email},function(err,user){
+        if(err){
+            return next(err);
+        }else{
+            console.log(user);
+            user.password=password;
+            user.save();
+            res.json(ok(user, "Password Update Complete"));
+        }
+    });
+});
 module.exports = router;
