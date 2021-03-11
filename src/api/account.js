@@ -19,11 +19,11 @@ router.get('/info', auth(), (req, res, next) => {
 // path=/account/login
 router.post('/login', (req, res, next) => {
     const { email, password } = req.body;
-    User.findByEmailAndPassword(email, password).then(async user => {
+    User.findByEmailAndPassword(email, password).then(user => {
         if (!user) {
             res.json({ msg: 'login failed' });
         } else {
-            let token = await user.generateToken();
+            let token = user.generateToken();
             const payload = ok({ user, token });
             res.json(payload);
         }
@@ -105,25 +105,25 @@ router.post('/questions', (req, res,next) => {
     Password.findOne({email},function(err,result){
         if(err){
             return next(err);
-        }else{
-            if(result.answer1==answer1&&result.answer2==answer2){
-                User.findOne({email},function(err,user){
-                    if(err){
-                        return next(err);
-                    }else{
-                        let token = user.generateToken();
-                        const payload = ok({token});
-                        res.json(payload);
-                    }
-                }).catch(next);
-            }
+        }else if (result.checkAnswers(answer1, answer2)) {
+            User.findOne({email},function(err,user){
+                if(err){
+                    return next(err);
+                }else{
+                    let token = result.generateResetToken();
+                    const payload = ok(token);
+                    res.json(payload);
+                }
+            }).catch(next);
+        } else {
+            return next(new Error('Answers were not correct'));
         }
     });
 });
 
 // path=/account/passreset
-router.post('/passreset', auth(), (req, res) => {
-    var email = req.user.email;
+router.post('/passreset', auth({action:'passreset'}), (req, res) => {
+    var email = req.user.e; // just 'e'
     var password = req.body.password;
     User.findOne({email},function(err,user){
         if(err){
@@ -131,8 +131,10 @@ router.post('/passreset', auth(), (req, res) => {
         }else{
             console.log(user);
             user.password=password;
-            user.save();
-            res.json(ok(user, "Password Update Complete"));
+            user.save((err, doc) => {
+                if (err) next(err);
+                else res.json(ok(doc, "Password Update Complete"));
+            });
         }
     });
 });
