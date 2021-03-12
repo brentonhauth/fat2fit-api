@@ -44,7 +44,7 @@ router.post('/signup', (req, res, next) => {
                     return next(err);
                 }
                 else{
-                    res.json( ok(doc, result) );
+                    res.json( ok(result, "Signed up") );
                 }
             });
             
