@@ -52,7 +52,13 @@ groupSchema.statics.joinGroup = async (groupId, uid) => {
         throw new Error('Invalid group id.');
     };
     
-    const group = await Group.findById(groupId.toUpperCase());
+    groupId = groupId.toUpperCase();
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+        throw new Error('Group doesn\'t exist');
+    }
+
     const isAlreadyMember = group.members.some(m => m.equals(uid));
 
     if (!isAlreadyMember && !group.coach.equals(uid)) {

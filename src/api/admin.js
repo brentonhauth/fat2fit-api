@@ -15,7 +15,11 @@ router.get('/user/:id', (req, res) => {
 
 router.post('/user/:id', (req, res, next) => {
     let _id = req.params.id;
-    User.findOne({ _id }).then(async user => {
+    User.findOne({ _id }).then(user => {
+        if (!user) {
+            throw new Error('Cannot find user');
+        }
+        
         const body = req.body;
         for (let i in body) {
             if (body[i] && user[i] !== undefined) {

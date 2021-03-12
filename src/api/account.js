@@ -85,12 +85,14 @@ router.post('/checkData',auth(), (req,res)=>{
 });
 
 // path=/account/questions
-router.get('/questions', (req, res) => {
+router.get('/questions', (req, res, next) => {
     // Handle recieveing user questions 
-    var email = req.body.email;
+    var email = req.query.email;
     Password.findOne({email},function(err,result){
         if (err){
             return next(err);
+        }else if (!result){
+            return next(new Error('No user found'));
         }else{
             var questions = {"question1":result.question1,"question2":result.question2};
             res.json(ok(questions));
@@ -105,7 +107,7 @@ router.post('/questions', (req, res,next) => {
     Password.findOne({email},function(err,result){
         if(err){
             return next(err);
-        }else if (result.checkAnswers(answer1, answer2)) {
+        }else if (result && result.checkAnswers(answer1, answer2)) {
             User.findOne({email},function(err,user){
                 if(err){
                     return next(err);
@@ -122,7 +124,7 @@ router.post('/questions', (req, res,next) => {
 });
 
 // path=/account/passreset
-router.post('/passreset', auth({action:'passreset'}), (req, res) => {
+router.post('/passreset', auth({action:'passreset'}), (req, res, next) => {
     var email = req.user.e; // just 'e'
     var password = req.body.password;
     User.findOne({email},function(err,user){
