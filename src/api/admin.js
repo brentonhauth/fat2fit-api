@@ -36,8 +36,29 @@ router.post('/user/:id', (req, res, next) => {
     }).catch(next);
 });
 
-router.get('/user/search', (req, res) => {
-    res.json(ok({}));
+//returns all user infomation if requested by admin
+//route /admin/users
+router.get('/users', (req,res,next) =>{
+    User.find({},function(err,result){
+        if(err){
+            return next(err);
+        }else{
+            res.json(ok(result));
+        }
+    });
+});
+
+//returns user infomation based on email sent
+//route /admin/search
+router.post('/search', (req, res,next) => {
+    var email = req.body.email;
+    User.find({'email':email}, function(err,result){
+        if(err){
+            return next(err);
+        }else{
+            res.json(ok(result));
+        }
+    });
 });
 
 
