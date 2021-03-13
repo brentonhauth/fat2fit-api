@@ -24,7 +24,17 @@ const definitions = {
         type: String,
         lowercase: true,
         trim: true,
-        match: /^(https?:\/\/)?[\w\.:\/=#&?]+$/i // quick check
+        match: /^(https?:\/\/)?[\w\.:\-\/=#&?]+$/i // quick check
+    },
+
+    actType: {
+        type: String,
+        enum: [
+            'A', // Group Activity
+            'W', // Static workouts
+            'C', // Challenges
+        ],
+        default: 'A'
     },
 
     created: {
@@ -51,6 +61,16 @@ activitySchema.statics.createNew = async (groupId, uid, activityData) => {
     await group.save();
 
     return doc;
+};
+
+activitySchema.statics.getRecommended = async function(uid) {
+    if (typeof uid !== 'string') {
+        throw new Error('Invalid user id');
+    }
+    // TODO: Connect user ID to recommendations
+
+    let workouts = await Activity.find({ actType: 'W' });
+    return workouts;
 };
 
 
