@@ -33,7 +33,6 @@ router.post('/login', (req, res, next) => {
 router.post('/signup', (req, res, next) => {
     let user = new User(req.body);
     let password = new Password(req.body);
-    console.log(password);
     user.save((err, doc) => {
         if (err) {
             return next(err);
