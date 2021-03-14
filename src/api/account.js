@@ -34,7 +34,6 @@ router.post('/signup', (req, res, next) => {
     req.body.role = 'U'; // prevents user from injecting admin role
     let user = new User(req.body);
     let password = new Password(req.body);
-    console.log(password);
     user.save((err, doc) => {
         if (err) {
             return next(err);
