@@ -44,19 +44,24 @@ const userSchema = new mongoose.Schema({
         default: 'U'
     },
     height:{
-        type: Number
+        type: Number,
+        min:[0, 'Negative values are not allowed']
     },
     waist:{
-        type: Number
+        type: Number,
+        min:[0, 'Negative values are not allowed']
     },
     pushupScore:{
-        type: Number
+        type: Number,
+        min:[0, 'Negative values are not allowed']
     },
     situpScore:{
-        type: Number
+        type: Number,
+        min:[0, 'Negative values are not allowed']
     },
     freq:{
-        type: Number
+        type: Number,
+        min:[0, 'Negative values are not allowed']
     },
 });
 
