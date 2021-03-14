@@ -55,19 +55,23 @@ router.post('/signup', (req, res, next) => {
 
 // path=/account/fitdata
 //update fitness data of user
-router.post('/fitdata', auth(), (req, res) => {
+router.post('/fitdata', auth(), (req, res,next) => {
     // Handle adding and updating fitness data
     const { height, waist, pushupScore, situpScore, freq } = req.body;
-    // to make sure the user doesn't try to reset their password/email
-    const data = { height, waist, pushupScore, situpScore, freq };
-    let query = { _id: req.user._id };
-    // will return new version of the doc
-    const options = { new: true };
-    User.findOneAndUpdate(query, data, options, function(err, result) {
+    var id = req.user._id;
+    User.findOne({'_id':id},function(err,user){
         if(err){
             return next(err);
         }else{
-            res.json(ok(result, "Update Complete"));
+            user.height=height;
+            user.waist=waist;
+            user.pushupScore=pushupScore;
+            user.situpScore=situpScore;
+            user.freq=freq;
+            user.save((err, doc) => {
+                if (err) next(err);
+                else res.json(ok(doc, "Fitness Data Update Complete"));
+            });
         }
     });
 });
@@ -132,7 +136,6 @@ router.post('/passreset', auth({action:'passreset'}), (req, res, next) => {
         if(err){
             return next(err);
         }else{
-            console.log(user);
             user.password=password;
             user.save((err, doc) => {
                 if (err) next(err);
