@@ -61,10 +61,12 @@ groupSchema.statics.joinGroup = async (groupId, uid) => {
 
     const isAlreadyMember = group.members.some(m => m.equals(uid));
 
-    if (!isAlreadyMember && !group.coach.equals(uid)) {
-        group.members.push(new ObjectId(uid));
-        await group.save();
+    if (isAlreadyMember || group.coach.equals(uid)) {
+        throw new Error('You\'re already a member.');
     }
+
+    group.members.push(new ObjectId(uid));
+    await group.save();
 
     const select = ['_id', 'email', 'firstName', 'lastName'];
     return group.populate('members', select)
