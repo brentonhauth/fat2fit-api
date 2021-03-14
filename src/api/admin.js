@@ -19,10 +19,10 @@ router.post('/user/:id', (req, res, next) => {
         if (!user) {
             throw new Error('Cannot find user');
         }
-        
+        const banned = ['_id', 'email'];
         const body = req.body;
         for (let i in body) {
-            if (body[i] && user[i] !== undefined) {
+            if ((i in user) && typeof user[i] !== 'function' && !banned.includes(i)) {
                 user[i] = body[i];
             }
         }
