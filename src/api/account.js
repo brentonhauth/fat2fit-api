@@ -1,6 +1,7 @@
 const express = require('express').Router;
 const User = require('../models/user');
 const Password = require('../models/password');
+const UserRole = require('../config/userRole');
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 
@@ -31,7 +32,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/signup', (req, res, next) => {
-    req.body.role = 'U'; // prevents user from injecting admin role
+    req.body.role = UserRole.END_USER; // prevents user from injecting admin role
     let user = new User(req.body);
     let password = new Password(req.body);
     user.save((err, doc) => {

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const config = require('../config');
+const UserRole = require('../config/userRole');
 const isEmail = validator.isEmail || validator.default.isEmail;
 const isStrongPassword = validator.isStrongPassword || validator.default.isStrongPassword;
 
@@ -40,8 +41,12 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['U', 'A', 'C'],
-        default: 'U'
+        enum: [
+            UserRole.END_USER,
+            UserRole.ADMIN,
+            UserRole.CUSTOMER_REP,
+        ],
+        default: UserRole.END_USER
     },
     height:{
         type: Number,

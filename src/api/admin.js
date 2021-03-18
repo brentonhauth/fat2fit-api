@@ -2,11 +2,12 @@ const express = require('express').Router;
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const User = require('../models/user');
+const UserRole = require('../config/userRole');
 
 
 const router = express();
 
-router.use( auth({ role: 'A' }) );
+router.use(auth({ role: UserRole.ADMIN }));
 
 
 router.get('/user/:id', (req, res) => {
