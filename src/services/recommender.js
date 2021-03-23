@@ -1,5 +1,8 @@
 const Gender = require('../config/gender');
 const Workout = require('../models/workout');
+const User = require('../models/user');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 /**
  * @param {number} age
@@ -28,10 +31,9 @@ function findRfmLimit(rfm) {
 /**
  * @param {number} rfm
  * @param {number} age
- * @param {number} freq
  * @param {Gender} gender
  */
-async function filterWorkoutData(rfm, age, freq, gender) {
+async function filterWorkoutData(rfm, age, gender) {
     const allWorkouts = await Workout.find({ gender });
 
     const [minAge, maxAge] = findAgeLimit(age);
@@ -43,7 +45,22 @@ async function filterWorkoutData(rfm, age, freq, gender) {
     );
 }
 
+/**
+ * @param {mongoose.Document<any>} user
+ */
+async function setWorkoutsForUser(user) {
+    const rfm = user.calcRfm();
+    const filtered = await filterWorkoutData(rfm, user.age, user.gender);
+
+    const workouts = filtered.slice(0, user.freq);
+    user.workouts = workouts.map(w => w._id);
+
+    const updated = await user.save();
+    return updated.populate('workouts').execPopulate();
+}
+
 
 module.exports = {
     filterWorkoutData,
+    setWorkoutsForUser,
 };

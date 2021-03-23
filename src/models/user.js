@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const config = require('../config');
 const UserRole = require('../config/userRole');
+const Gender = require('../config/gender');
 const isEmail = validator.isEmail || validator.default.isEmail;
 const isStrongPassword = validator.isStrongPassword || validator.default.isStrongPassword;
 
@@ -39,6 +40,21 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+
+    age: {
+        type: Number,
+        min: 13,
+        max: 120,
+        default: 20,
+    },
+
+    gender: {
+        type: String,
+        enum: [Gender.MALE, Gender.FEMALE],
+        required: true,
+        default: Gender.MALE,
+    },
+
     role: {
         type: String,
         enum: [
@@ -68,6 +84,11 @@ const userSchema = new mongoose.Schema({
         type: Number,
         min:[0, 'Negative values are not allowed']
     },
+
+    workouts: [{
+        ref: 'Workout',
+        type: mongoose.Schema.Types.ObjectId,
+    }]
 });
 
 userSchema.pre('save', async function(next) {
@@ -86,6 +107,12 @@ userSchema.methods.generateToken = function() {
         ts: Date.now(),
     };
     return jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
+};
+
+userSchema.methods.calcRfm = function() {
+    const user = this;
+    const MAGIC = user.gender === Gender.MALE ? 64 : 76;
+    return MAGIC - (20 * user.height / user.waist);
 };
 
 userSchema.statics.findByEmailAndPassword = async (email, password) => {

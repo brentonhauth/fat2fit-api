@@ -4,6 +4,7 @@ const Password = require('../models/password');
 const UserRole = require('../config/userRole');
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
+const { setWorkoutsForUser } = require('../services/recommender');
 
 const router = express();
 
@@ -58,22 +59,17 @@ router.post('/signup', (req, res, next) => {
 router.post('/fitdata', auth(), (req, res,next) => {
     // Handle adding and updating fitness data
     const { height, waist, pushupScore, situpScore, freq } = req.body;
-    var id = req.user._id;
-    User.findOne({'_id':id},function(err,user){
-        if(err){
-            return next(err);
-        }else{
-            user.height=height;
-            user.waist=waist;
-            user.pushupScore=pushupScore;
-            user.situpScore=situpScore;
-            user.freq=freq;
-            user.save((err, doc) => {
-                if (err) next(err);
-                else res.json(ok(doc, "Fitness Data Update Complete"));
-            });
-        }
-    });
+    var _id = req.user._id;
+    User.findOne({ _id }).then(user => {
+        user.height=height;
+        user.waist=waist;
+        user.pushupScore=pushupScore;
+        user.situpScore=situpScore;
+        user.freq=freq;
+        return user.save();
+    }).then(setWorkoutsForUser).then(updated => {
+        res.json(ok(updated, "Fitness Data Update Complete"));
+    }).catch(next);
 });
 
 //path=/account/checkData
