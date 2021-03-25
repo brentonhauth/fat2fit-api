@@ -11,7 +11,7 @@ const router = express();
 router.get('/available', (_req, res, next) => {
     const query = { $and: [
         { state: ChallengeState.AVAILABLE },
-        { closes: { $lt: new Date(Date.now()) } }
+        { closes: { $gt: new Date(Date.now()) } }
     ]};
 
     Challenge.find(query).then(docs => {
