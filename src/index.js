@@ -7,6 +7,7 @@ const group = require('./api/group');
 const admin = require('./api/admin');
 const cusrep = require('./api/cusrep');
 const workout = require('./api/workout');
+const challenge = require('./api/challenge');
 
 module.exports = () => {
     const app = attachCommon(express());
@@ -16,6 +17,7 @@ module.exports = () => {
     app.use('/admin', admin);
     app.use('/cusrep', cusrep);
     app.use('/workout', workout);
+    app.use('/challenge', challenge);
     
     return attachErrorHandlers(app);
 };
