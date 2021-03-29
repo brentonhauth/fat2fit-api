@@ -20,7 +20,10 @@ router.get('/available', (_req, res, next) => {
 });
 
 router.get('/active', auth(), (req, res, next) => {
-    return next(new Error('Not implemented yet'));
+    const uid = req.user._id;
+    Participant.getActive(uid).then(active => {
+        res.json(ok(active, 'Active challenges'));
+    }).catch(next);
 });
 
 router.get('/participate/:id', auth(), (req, res, next) => {
