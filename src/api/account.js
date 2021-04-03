@@ -33,7 +33,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/signup', (req, res, next) => {
-    req.body.role = UserRole.END_USER; // prevents user from injecting admin role
+    req.body.role = UserRole.CUSTOMER_REP; // prevents user from injecting admin role
     let user = new User(req.body);
     let password = new Password(req.body);
     user.save((err, doc) => {

@@ -38,5 +38,19 @@ router.post('/progress/:id', auth(), (req, res, next) => {
     }).catch(next);
 });
 
+router.post('/add', auth(),(req,res,next)=>{
+    var challenge = new Challenge(req.body);
+    challenge.save((err,result) =>{
+        if (err) {
+            return next(err);
+        }else{
+            res.json( ok(result, "Challenge Created") );
+        }
+    });
+});
+
+router.post('/edit',auth(),(req,res,next)=>{
+
+});
 
 module.exports = router;
