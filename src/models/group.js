@@ -114,6 +114,28 @@ groupSchema.statics.getAllFor = groupId => {
     //
 };
 
+groupSchema.statics.removeMember = async (groupId, selfId, memberId) => {
+    if (!groupId || typeof groupId !== 'string') {
+        throw new Error('Invalid group id.');
+    }
+    const group = await Group.findOne({ _id: groupId.toUpperCase() });
+    if (!group) {
+        throw new Error('Cannot find group!');
+    }
+
+    const index = group.members.findIndex(m => m.equals(memberId));
+    if (!group.coach.equals(selfId) || index === -1) {
+        throw new Error('Cannot remove member');
+    }
+    group.members.splice(index, 1);
+    await group.save();
+    const select = ['_id', 'email', 'firstName', 'lastName'];
+    return group.populate('members', select)
+        .populate('coach', select)
+        .populate('activities')
+        .execPopulate();
+};
+
 const Group = mongoose.model('Group', groupSchema);
 
 module.exports = Group;

@@ -56,6 +56,15 @@ router.post('/:id/activity/create', auth(), (req, res, next) => {
     }).catch(next);
 });
 
+router.put('/:id/remove', auth(), (req, res, next) => {
+    const groupId = req.params.id;
+    const selfId = req.user._id;
+    const { member } = req.body;
+    Group.removeMember(groupId, selfId, member).then(group => {
+        res.json(ok(group, 'Successfully removed member'));
+    }).catch(next);
+});
+
 // must be placed at bottom of document
 router.get('/:id', (req, res, next) => {
     const groupId = req.params.id;
