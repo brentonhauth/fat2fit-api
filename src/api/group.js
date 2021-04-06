@@ -27,6 +27,13 @@ router.post('/create', auth(), async (req, res, next) => {
     }
 });
 
+router.get('/mine', auth(), (req, res, next) => {
+    const uid = req.user._id;
+    Group.getMine(uid).then(groups => {
+        res.json(ok(groups || []));
+    }).catch(next);
+});
+
 router.put('/join/:id', auth(), (req, res, next) => {
     const groupId = req.params.id;
     const uid = req.user._id;

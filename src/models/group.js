@@ -98,6 +98,18 @@ groupSchema.statics.leaveGroup = async (groupId, uid) => {
     return groupId;
 };
 
+groupSchema.statics.getMine = async uid => {
+    if (typeof uid === 'string') {
+        uid = ObjectId(uid);
+    }
+    const select = ['_id', 'email', 'firstName', 'lastName'];
+    return Group.find({
+        $or: [{ coach: uid }, { members: uid }]
+    }).populate('members', select)
+    .populate('coach', select)
+    .populate('activities').exec();
+};
+
 groupSchema.statics.getAllFor = groupId => {
     if (typeof groupId !== 'string') {
         return Promise.reject(new Error('Invalid group id.'));
