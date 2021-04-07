@@ -27,6 +27,13 @@ router.post('/create', auth(), async (req, res, next) => {
     }
 });
 
+router.get('/mine', auth(), (req, res, next) => {
+    const uid = req.user._id;
+    Group.getMine(uid).then(groups => {
+        res.json(ok(groups || []));
+    }).catch(next);
+});
+
 router.put('/join/:id', auth(), (req, res, next) => {
     const groupId = req.params.id;
     const uid = req.user._id;
@@ -53,6 +60,15 @@ router.post('/:id/activity/create', auth(), (req, res, next) => {
 
     Activity.createNew(groupId, uid, req.body).then(activity => {
         res.json(ok(activity));
+    }).catch(next);
+});
+
+router.put('/:id/remove', auth(), (req, res, next) => {
+    const groupId = req.params.id;
+    const selfId = req.user._id;
+    const { member } = req.body;
+    Group.removeMember(groupId, selfId, member).then(group => {
+        res.json(ok(group, 'Successfully removed member'));
     }).catch(next);
 });
 
