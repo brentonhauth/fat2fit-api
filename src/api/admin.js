@@ -2,7 +2,7 @@ const express = require('express').Router;
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const User = require('../models/user');
-const UserRole = require('../config/userRole');
+const UserRole = require('../types/userRole.type');
 
 
 const router = express();

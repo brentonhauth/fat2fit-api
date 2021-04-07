@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const config = require('../config');
-const UserRole = require('../config/userRole');
-const Gender = require('../config/gender');
+const UserRole = require('../types/userRole.type');
+const Gender = require('../types/gender.type');
 const isEmail = validator.isEmail || validator.default.isEmail;
 const isStrongPassword = validator.isStrongPassword || validator.default.isStrongPassword;
 

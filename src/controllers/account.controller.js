@@ -1,9 +1,23 @@
+const User = require('../models/user');
+const Password = require('../models/password');
+const UserRole = require('../types/userRole.type');
+const { ok } = require('../helpers/response');
+const { setWorkoutsForUser } = require('../services/recommender');
+
 /**
  * @typedef {import('express').RequestHandler} ExpressRequestHandler
  */
 
 /** */
 module.exports = {
+
+  /** @type {ExpressRequestHandler} */
+  info(req, res, next) {
+    const _id = req.user._id;
+    User.findOne({ _id }).then(user => {
+        res.json(ok(user));
+    }).catch(next);
+  },
 
   /** @type {ExpressRequestHandler} */
   login(req, res, next) {
@@ -41,6 +55,23 @@ module.exports = {
   },
 
   /** @type {ExpressRequestHandler} */
+  sendFitData(req, res, next) {
+    // Handle adding and updating fitness data
+    const { height, waist, pushupScore, situpScore, freq } = req.body;
+    const _id = req.user._id;
+    User.findOne({ _id }).then(user => {
+      user.height = height;
+      user.waist = waist;
+      user.pushupScore = pushupScore;
+      user.situpScore = situpScore;
+      user.freq = freq;
+      return user.save();
+    }).then(setWorkoutsForUser).then(updated => {
+      res.json(ok(updated, "Fitness Data Update Complete"));
+    }).catch(next);
+  },
+
+  /** @type {ExpressRequestHandler} */
   getQuestions(req, res, next) {
     // Handle recieveing user questions
     const email = req.query.email;
@@ -60,6 +91,29 @@ module.exports = {
   },
 
   /** @type {ExpressRequestHandler} */
+  answerQuestions(req, res, next) {
+    // Handle password reset (Security Question)
+    const { email, answer1, answer2 } = req.body;
+    Password.findOne({email},function(err,result){
+      if (err) {
+        return next(err);
+      } else if (result && result.checkAnswers(answer1, answer2)) {
+        User.findOne({email},function(err,user){
+          if (err) {
+            return next(err);
+          } else {
+            let token = result.generateResetToken();
+            const payload = ok(token);
+            res.json(payload);
+          }
+        }).catch(next);
+      } else {
+        return next(new Error('Answers were not correct'));
+      }
+    });
+  },
+
+  /** @type {ExpressRequestHandler} */
   passreset(req, res, next) {
     var email = req.user.e; // just 'e'
     var password = req.body.password;
@@ -67,7 +121,7 @@ module.exports = {
       if (err) {
         return next(err);
       } else {
-        user.password=password;
+        user.password = password;
         user.save((err, doc) => {
           if (err) next(err);
           else res.json(ok(doc, "Password Update Complete"));

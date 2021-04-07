@@ -1,4 +1,4 @@
-const Gender = require('../config/gender');
+const Gender = require('../types/gender.type');
 const Workout = require('../models/workout');
 const User = require('../models/user');
 const mongoose = require('mongoose');

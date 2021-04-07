@@ -4,8 +4,8 @@ const { ok } = require('../helpers/response');
 const Challenge = require('../models/challenge');
 const Participant = require('../models/participant');
 const Reward = require('../models/reward');
-const UserRole = require('../config/userRole');
-const ChallengeState = require('../config/challengeState');
+const UserRole = require('../types/userRole');
+const ChallengeState = require('../types/challengeState');
 
 const router = express();
 

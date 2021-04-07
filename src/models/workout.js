@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const Gender = require('../config/gender');
+const Gender = require('../types/gender.type');
 
 const workoutSchema = new mongoose.Schema({
     repetition: {

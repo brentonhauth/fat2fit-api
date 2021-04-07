@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ChallengeState = require('../config/challengeState');
+const ChallengeState = require('../types/challengeState.type');
 const ObjectId = mongoose.Types.ObjectId;
 
 

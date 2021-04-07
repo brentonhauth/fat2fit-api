@@ -1,7 +1,7 @@
 const express = require('express').Router;
 const User = require('../models/user');
 const Password = require('../models/password');
-const UserRole = require('../config/userRole');
+const UserRole = require('../types/userRole.type');
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const { setWorkoutsForUser } = require('../services/recommender');

@@ -3,8 +3,7 @@ const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const Challenge = require('../models/challenge');
 const Participant = require('../models/participant');
-const ChallengeState = require('../config/challengeState');
-// const ParticipantState = require('../config/participantState');
+const ChallengeState = require('../types/challengeState.type');
 
 const router = express();
 
