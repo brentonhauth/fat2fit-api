@@ -2,6 +2,7 @@ const express = require('express').Router;
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const Challenge = require('../models/challenge');
+const Reward = require('../models/challenge');
 const UserRole = require('../config/userRole');
 
 const router = express();
@@ -39,5 +40,30 @@ router.post('/challenge/:id', (req, res, next) => {
     }).catch(next);
 });
 
+router.post('/reward/add', (req,res,next)=>{
+    const reward = new Reward(req.body);
+    reward.save((err, doc) =>{
+        if (err) next(err);
+        else res.json(ok(doc));
+    });
+
+});
+
+router.post('/reward/edit/:id',(req, res, next) =>{
+    let _id = req.params.id;
+    Reward.findOne({_id}).then(doc =>{
+        if (!doc) throw new Error('Could not find reward');
+        const body = req.body;
+        for (let i in body) {
+            if ((i in doc) && typeof doc[i] !== 'function') {
+                doc[i] = body[i];
+            }
+        }
+        doc.save((err, result) => {
+            if (err) next(err);
+            else res.json(ok(result));
+        });
+    }).catch(next);
+});
 
 module.exports = router;
