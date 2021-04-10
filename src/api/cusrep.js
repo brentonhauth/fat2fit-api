@@ -2,7 +2,6 @@ const express = require('express').Router;
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const Challenge = require('../models/challenge');
-const Reward = require('../models/challenge');
 const Reward = require('../models/reward');
 const UserRole = require('../config/userRole');
 
