@@ -85,6 +85,18 @@ participantSchema.statics.updateProgress = async (challenge, user, newDistance) 
 };
 
 
+participantSchema.statics.getActive = function(uid) {
+    return Participant.aggregate([
+        {$match: { user: uid, state: ParticipantState.ACTIVE }},
+        {$lookup: {
+            from: 'challenges', localField: 'challenge',
+            foreignField: '_id', as: 'challenge'
+        }},
+        {$unwind: { path: '$challenge' }},
+        {$match: { 'challenge.state': ChallengeState.AVAILABLE }}
+    ]).exec();
+};
+
 participantSchema.statics.participate = async (cid, uid) => {
     if (!mongoose.isValidObjectId(cid)) {
         throw new Error('Invalid challenge id');
