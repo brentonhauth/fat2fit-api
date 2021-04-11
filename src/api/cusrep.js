@@ -10,7 +10,7 @@ const router = express();
 router.use(auth({ role: UserRole.CUSTOMER_REP }));
 
 router.get('/challenges', (_req, res, next) => {
-    Challenge.find({}).then(docs => {
+    Challenge.find({}).populate('reward').exec().then(docs => {
         res.json(ok(docs || []));
     }).catch(next);
 });
