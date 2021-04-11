@@ -16,7 +16,6 @@ const rewardSchema = new mongoose.Schema({
     },
     description:{
         type: String,
-        required: true,
     }
 });
 
