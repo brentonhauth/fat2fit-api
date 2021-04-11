@@ -14,7 +14,7 @@ router.get('/available', (_req, res, next) => {
         { closes: { $gt: new Date(Date.now()) } }
     ]};
 
-    Challenge.find(query).then(docs => {
+    Challenge.find(query).populate('reward').exec().then(docs => {
         res.json(ok(docs || []));
     }).catch(next);
 });
