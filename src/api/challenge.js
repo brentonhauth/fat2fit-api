@@ -56,4 +56,13 @@ router.post('/edit',auth(),(req,res,next)=>{
 
 });
 
+router.get('/:id', (req, res, next) => {
+    const _id = req.params.id;
+    Challenge.findOne({ _id })
+    .populate('reward')
+    .exec().then(challenge => {
+        res.json(ok(challenge));
+    }).catch(next);
+});
+
 module.exports = router;
