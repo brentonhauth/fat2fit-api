@@ -1,8 +1,15 @@
 const express = require('express');
 const helmet = require('helmet');
-const cors = require('cors');
 const config = require('../config');
-const { urlencoded, json } = require('body-parser');
+const cors = require('cors');
+
+const webCors = cors({
+    allowedHeaders: ['Origin', 'Authorization', 'Content-Type'],
+    origin: [
+        /^http:\/\/localhost(\:\d+)?\/?$/,
+        /^https?:\/\/brentonhauth.github.io\/?/
+    ]
+});
 
 /**
  * @param {express.Application} app
@@ -21,12 +28,15 @@ module.exports = app => {
         development(app);
     }
     app.use(helmet());
-    app.use(cors({
-        allowedHeaders: ['Origin', 'Authorization', 'Content-Type'],
-        origin: '*'
-    }));
+    app.use((req, res, next) => {
+        if (req.query.web) {
+            return webCors(req, res, next);
+        } else {
+            return next();
+        }
+    });
     app.use(express.static('./public'));
-    app.use(urlencoded({ extended: false }));
-    app.use(json());
+    app.use(express.urlencoded({ extended: false }));
+    app.use(express.json());
     return app;
 };
