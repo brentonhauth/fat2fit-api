@@ -29,6 +29,7 @@ module.exports = app => {
     if (/^dev/.test(config.ENV)) {
         development(app);
     }
+    app.use(express.static('./public'));
     app.use(helmet());
     app.use(cookieParser());
     app.use((req, res, next) => {
@@ -38,7 +39,6 @@ module.exports = app => {
             return next();
         }
     });
-    app.use(express.static('./public'));
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
     return app;
