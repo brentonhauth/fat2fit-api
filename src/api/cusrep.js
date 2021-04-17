@@ -23,6 +23,15 @@ router.post('/challenge/create', (req, res, next) => {
     });
 });
 
+router.get('/challenge/:id', (req, res, next) => {
+    let _id = req.params.id;
+    Challenge.findOne({ _id })
+    .populate('reward')
+    .exec().then(challenge => {
+        res.json(ok(challenge));
+    }).catch(next);
+});
+
 router.post('/challenge/:id', (req, res, next) => {
     let _id = req.params.id;
     Challenge.findOne({ _id }).then(doc => {

@@ -4,6 +4,7 @@ const { ok } = require('../helpers/response');
 const Challenge = require('../models/challenge');
 const Participant = require('../models/participant');
 const ChallengeState = require('../config/challengeState');
+const UserRole = require('../config/userRole');
 // const ParticipantState = require('../config/participantState');
 
 const router = express();
@@ -33,6 +34,18 @@ router.get('/participate/:id', auth(), (req, res, next) => {
     }).catch(next);
 });
 
+router.get('/progress/:id', auth(), (req, res, next) => {
+    const cid = req.params.id, uid = req.user._id;
+    Participant.findOne({
+        $and: [{ challenge: cid }, { user: uid }]
+    }).populate('challenge')
+    .populate('user')
+    .exec().then(par => {
+        res.json(ok(par, 'Current progress'));
+    }).catch(next);
+});
+
+
 router.post('/progress/:id', auth(), (req, res, next) => {
     const cid = req.params.id, uid = req.user._id;
     const newDistance = req.body.distance;
@@ -41,7 +54,7 @@ router.post('/progress/:id', auth(), (req, res, next) => {
     }).catch(next);
 });
 
-router.post('/add', auth(),(req,res,next)=>{
+router.post('/add', auth({ role: UserRole.CUSTOMER_REP }),(req,res,next)=>{
     var challenge = new Challenge(req.body);
     challenge.save((err,result) =>{
         if (err) {

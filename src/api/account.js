@@ -5,6 +5,7 @@ const UserRole = require('../config/userRole');
 const auth = require('../middleware/auth');
 const { ok } = require('../helpers/response');
 const { setWorkoutsForUser } = require('../services/recommender');
+const { COOKIE_NAME } = require('../config');
 
 const router = express();
 
@@ -25,11 +26,22 @@ router.post('/login', (req, res, next) => {
         if (!user) {
             res.json({ msg: 'login failed' });
         } else {
-            let token = user.generateToken();
+            const token = user.generateToken();
+            if (req.query.web) {
+                res.cookie(COOKIE_NAME, token);
+            }
             const payload = ok({ user, token });
             res.json(payload);
         }
     }).catch(next);
+});
+
+router.get('/logout', (req, res) => {
+    if (req.query.web) {
+        res.clearCookie(COOKIE_NAME);
+    }
+    const msg = 'Logged out';
+    res.json(ok(msg, msg));
 });
 
 router.post('/signup', (req, res, next) => {
@@ -122,6 +134,23 @@ router.post('/questions', (req, res,next) => {
             return next(new Error('Answers were not correct'));
         }
     });
+});
+
+router.get('/touch', (req, res, next) => {
+    const token = req.cookies[COOKIE_NAME];
+    if (!token) {
+        return next(new Error('No session cookie'));
+    }
+
+    auth.verifyAuthorization(token).then(decoded => {
+        return User.findOne({ _id: decoded._id });
+    }).then(user => {
+        if (!user) {
+            throw new Error('No user');
+        }
+        // const token = user.generateToken();
+        res.json(ok({ token, user }));
+    }).catch(next);
 });
 
 // path=/account/passreset
