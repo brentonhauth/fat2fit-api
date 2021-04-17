@@ -86,8 +86,9 @@ participantSchema.statics.updateProgress = async (challenge, user, newDistance) 
 
 
 participantSchema.statics.getActive = function(uid) {
+    console.log('UID',uid);
     return Participant.aggregate([
-        {$match: { user: uid, state: ParticipantState.ACTIVE }},
+        {$match: { user: mongoose.Types.ObjectId(uid), state: ParticipantState.ACTIVE }},
         {$lookup: {
             from: 'challenges', localField: 'challenge',
             foreignField: '_id', as: 'challenge'
@@ -123,7 +124,10 @@ participantSchema.statics.participate = async (cid, uid) => {
         });
     }
     await participant.save();
-    return participant.populate('challenge').populate('user').execPopulate();
+    return participant.populate('challenge')
+        .populate('challenge.reward')
+        .populate('user')
+        .execPopulate();
 };
 
 

@@ -7,6 +7,7 @@ const env = process.env.NODE_ENV || 'dev';
  * @property {string} DB_URL
  * @property {string} REDIS_URL
  * @property {string} JWT_SECRET
+ * @property {string} COOKIE_NAME
  * @property {string} [REDIS_PASSWORD]
  */
 
@@ -20,5 +21,7 @@ try {
     config = require('./env/dev');
     config.ENV = 'dev';
 }
+
+config.COOKIE_NAME = 'sess';
 
 module.exports = config;

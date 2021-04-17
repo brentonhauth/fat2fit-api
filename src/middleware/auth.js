@@ -89,5 +89,6 @@ function auth(options) {
 
 auth.standard = standard;
 auth.custom = custom;
+auth.verifyAuthorization = verifyAuthorization;
 
 module.exports = auth;

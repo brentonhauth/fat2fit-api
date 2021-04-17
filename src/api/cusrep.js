@@ -10,7 +10,7 @@ const router = express();
 router.use(auth({ role: UserRole.CUSTOMER_REP }));
 
 router.get('/challenges', (_req, res, next) => {
-    Challenge.find({}).then(docs => {
+    Challenge.find({}).populate('reward').exec().then(docs => {
         res.json(ok(docs || []));
     }).catch(next);
 });
@@ -21,6 +21,15 @@ router.post('/challenge/create', (req, res, next) => {
         if (err) next(err);
         else res.json(ok(doc));
     });
+});
+
+router.get('/challenge/:id', (req, res, next) => {
+    let _id = req.params.id;
+    Challenge.findOne({ _id })
+    .populate('reward')
+    .exec().then(challenge => {
+        res.json(ok(challenge));
+    }).catch(next);
 });
 
 router.post('/challenge/:id', (req, res, next) => {
@@ -40,6 +49,19 @@ router.post('/challenge/:id', (req, res, next) => {
     }).catch(next);
 });
 
+router.get('/challenge/:id/reward', (req, res, next) => {
+    const _id = req.params.id;
+    Challenge.findOne({ _id }).then(doc => {
+        if (!doc) {
+            throw new Error('No challenge found');
+        }else if (!doc.reward) {
+            throw new Error('No reward');
+        }
+        return doc.populate('reward').execPopulate();
+    }).then(({ reward }) => {
+        res.json(ok(reward, `Reward for challenge ${_id}`));
+    }).catch(next);
+});
 
 router.get('/rewards', (_req, res, next) => {
     Reward.find({}).then(rewards => {
