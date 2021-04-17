@@ -3,6 +3,8 @@ const Group = require('./group');
 const ObjectId = mongoose.Types.ObjectId;
 
 
+const YT_RE = /^(https?:\/\/)?(www\.)?youtu(\.be\/|be\.com\/watch\?v=)[\-\w]{11}/;
+
 /**
  * @type {Record<string, mongoose.SchemaDefinitionProperty>}
  */
@@ -24,7 +26,7 @@ const definitions = {
         type: String,
         lowercase: true,
         trim: true,
-        match: /^(https?:\/\/)?[\w\.:\-\/=#&?]+$/i // quick check
+        match: YT_RE, // /^(https?:\/\/)?[\w\.:\-\/=#&?]+$/i // quick check
     },
 
     actType: {
