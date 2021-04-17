@@ -76,6 +76,12 @@ router.post('/reward/create', (req, res, next) => {
         else res.json(ok(doc));
     });
 });
+router.get('/reward/:id', (req, res, next) => {
+    let _id = req.params.id;
+    Reward.findById(_id).then(reward => {
+        res.json(ok(reward));
+    }).catch(next);
+});
 
 router.post('/reward/:id', (req, res, next) => {
     let _id = req.params.id;
